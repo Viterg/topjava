@@ -6,8 +6,7 @@ import ru.javawebinar.topjava.model.UserMealWithExcess;
 import java.time.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -88,8 +87,16 @@ public class UserMealsUtil {
         @Override
         public BinaryOperator<Map<LocalDate, List<UserMeal>>> combiner() {
             return (m1, m2) -> {
-                m1.putAll(m2);
-                return m1;
+                Map<LocalDate, List<UserMeal>> merged = Stream.of(m1, m2)
+                                                              .map(Map::entrySet)
+                                                              .flatMap(Set::stream)
+                                                              .collect(Collectors.toMap(Map.Entry::getKey,
+                                                                                        Map.Entry::getValue, (a, b) -> {
+                                                                          List<UserMeal> both = new ArrayList<>(a);
+                                                                          both.addAll(b);
+                                                                          return both;
+                                                                      }));
+                return merged;
             };
         }
 
@@ -98,12 +105,12 @@ public class UserMealsUtil {
             return m -> {
                 List<UserMealWithExcess> result = new ArrayList<>();
                 for (LocalDate k : m.keySet()) {
-                    int dailyCalories = m.get(k).stream().mapToInt(UserMeal::getCalories).sum();
-                    result.addAll(m.get(k).stream().filter(
-                            meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                                   .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(),
-                                                                       meal.getCalories(),
-                                                                       dailyCalories > caloriesPerDay))
+                    int dailyCalories = m.get(k).stream()
+                                         .mapToInt(UserMeal::getCalories)
+                                         .sum();
+                    result.addAll(m.get(k).stream()
+                                   .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                                   .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(),                                                                       meal.getCalories(),                                                                       dailyCalories > caloriesPerDay))
                                    .collect(Collectors.toList()));
                 }
                 return result;
