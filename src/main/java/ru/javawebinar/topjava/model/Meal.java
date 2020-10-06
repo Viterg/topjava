@@ -4,15 +4,22 @@ import java.time.*;
 
 public class Meal {
     private final LocalDateTime dateTime;
-
-    private final String description;
-
-    private final int calories;
+    private final String        description;
+    private final int           calories;
+    private       int           id;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDateTime getDateTime() {
