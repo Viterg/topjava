@@ -3,17 +3,18 @@ package ru.javawebinar.topjava.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class MemMealService implements MealService {
-    private static final Logger        log         = LoggerFactory.getLogger(MemMealService.class);
-    private static final AtomicInteger commonIndex = new AtomicInteger(0);
-    private static final List<Meal>    meals       = Collections.synchronizedList(new ArrayList<>());
+    private static final Logger             log         = LoggerFactory.getLogger(MemMealService.class);
+    private final        AtomicInteger      commonIndex = new AtomicInteger(1);
+    private final        Map<Integer, Meal> meals       = new ConcurrentHashMap<>();
 
     public MemMealService() {
         add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
@@ -26,37 +27,39 @@ public class MemMealService implements MealService {
     }
 
     @Override
-    public Collection<MealTo> getAll() {
-        return MealsUtil.filteredByStreams(meals, LocalTime.MIN, LocalTime.MAX, 2000);
+    public List<Meal> getAll() {
+        return meals.values().stream().sorted(Comparator.comparing(Meal::getDateTime)).collect(Collectors.toList());
     }
 
     @Override
     public Meal getById(int mealId) {
-        log.debug("Get meal with id " + mealId);
+        log.debug("Get meal with id {}", mealId);
         return meals.get(mealId);
     }
 
     @Override
-    public void add(Meal meal) {
+    public Meal add(Meal meal) {
         int id = commonIndex.get();
         meal.setId(id);
-        log.debug("Add meal with id " + id);
-        meals.add(meal);
+        log.debug("Add meal with id {}", id);
+        meals.put(id, meal);
         commonIndex.getAndIncrement();
+        return meal;
     }
 
     @Override
-    public void update(Meal meal) {
+    public Meal update(Meal meal) {
         int id = meal.getId();
-        log.debug("Update meal with id " + id);
+        log.debug("Update meal with id {}", id);
         meals.remove(id);
-        meals.add(id, meal);
+        meals.put(id, meal);
+        return meal;
     }
 
     @Override
     public void delete(int mealId) {
-        log.debug("Delete meal with id " + mealId);
-        meals.removeIf(meal -> meal.getId() == mealId);
+        log.debug("Delete meal with id {}", mealId);
+        if (meals.containsKey(mealId)) meals.remove(mealId);
         commonIndex.getAndDecrement();
     }
 }

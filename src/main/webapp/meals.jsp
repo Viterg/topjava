@@ -18,13 +18,13 @@
     </thead>
     <tbody>
     <c:forEach items="${requestScope.meals}" var="meal">
-        <c:set var="rowColor" value="${meal.excess == true ? 'red' : 'green'}"/>
+        <c:set var="rowColor" value="${meal.excess ? 'red' : 'green'}"/>
         <tr style="color:${rowColor}">
             <td>${localDateTimeFormat.format(meal.dateTime)}</td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
-            <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}" />">Update</a></td>
-            <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}" />">Delete</a></td>
+            <td><a href="meals?action=edit&mealId=${meal.id}">Update</a></td>
+            <td><a href="meals?action=delete&mealId=${meal.id}">Delete</a></td>
         </tr>
     </c:forEach>
     </tbody>

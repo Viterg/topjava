@@ -3,10 +3,10 @@ package ru.javawebinar.topjava.model;
 import java.time.*;
 
 public class Meal {
+    private       int           id;
     private final LocalDateTime dateTime;
     private final String        description;
     private final int           calories;
-    private       int           id;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
