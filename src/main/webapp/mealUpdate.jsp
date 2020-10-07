@@ -18,7 +18,7 @@
 <form method="POST" action='meals' name="frmUpdateMeal">
     <input type="hidden" id="mealId" name="mealId" value="${meal.id}">
     <label for="dateTime">Date|Time : </label>
-    <input type="datetime" id="dateTime" name="dateTime"
+    <input type="datetime-local" id="dateTime" name="dateTime" placeholder="ex. 2020-03-30 16:20"
            value="${meal.dateTime == null ? '' : localDateTimeFormat.format(meal.dateTime)}"/> <br/>
     <label for="description">Description : </label>
     <input type="text" id="description" name="description" value="${meal.description}"/> <br/>

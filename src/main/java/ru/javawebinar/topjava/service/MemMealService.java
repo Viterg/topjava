@@ -9,12 +9,11 @@ import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class MemMealService implements MealService {
-    private static final Logger             log         = LoggerFactory.getLogger(MemMealService.class);
-    private final        AtomicInteger      commonIndex = new AtomicInteger(1);
-    private final        Map<Integer, Meal> meals       = new ConcurrentHashMap<>();
+    private static final Logger             log     = LoggerFactory.getLogger(MemMealService.class);
+    private final        AtomicInteger      counter = new AtomicInteger(0);
+    private final        Map<Integer, Meal> meals   = new ConcurrentHashMap<>();
 
     public MemMealService() {
         add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
@@ -28,7 +27,8 @@ public class MemMealService implements MealService {
 
     @Override
     public List<Meal> getAll() {
-        return meals.values().stream().sorted(Comparator.comparing(Meal::getDateTime)).collect(Collectors.toList());
+        log.debug("Get all meals");
+        return new ArrayList<>(meals.values());
     }
 
     @Override
@@ -39,11 +39,10 @@ public class MemMealService implements MealService {
 
     @Override
     public Meal add(Meal meal) {
-        int id = commonIndex.get();
+        int id = counter.getAndIncrement();
         meal.setId(id);
         log.debug("Add meal with id {}", id);
         meals.put(id, meal);
-        commonIndex.getAndIncrement();
         return meal;
     }
 
@@ -51,15 +50,13 @@ public class MemMealService implements MealService {
     public Meal update(Meal meal) {
         int id = meal.getId();
         log.debug("Update meal with id {}", id);
-        meals.remove(id);
-        meals.put(id, meal);
+        meals.replace(id, meal);
         return meal;
     }
 
     @Override
     public void delete(int mealId) {
         log.debug("Delete meal with id {}", mealId);
-        if (meals.containsKey(mealId)) meals.remove(mealId);
-        commonIndex.getAndDecrement();
+        meals.remove(mealId);
     }
 }

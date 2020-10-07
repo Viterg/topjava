@@ -18,17 +18,17 @@ import java.util.List;
 import java.util.Locale;
 
 public class MealServlet extends HttpServlet {
-    private static final Logger            log        = LoggerFactory.getLogger(MealServlet.class);
-    private static final String            DT_PATTERN = "yyyy.MM.dd HH:mm";
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(DT_PATTERN, Locale.getDefault());
+    private static final Logger            log                = LoggerFactory.getLogger(MealServlet.class);
+    private static final int               MAX_DAILY_CALORIES = 2000;
+    private static final String            DT_PATTERN         = "yyyy-MM-dd HH:mm";
+    private static final DateTimeFormatter dateFormat         = DateTimeFormatter.ofPattern(DT_PATTERN, Locale.getDefault());
     private              MealService       service;
 
     public MealServlet() {
     }
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         service = new MemMealService();
     }
 
@@ -36,18 +36,14 @@ public class MealServlet extends HttpServlet {
         String forward = "meals.jsp";
         String action = request.getParameter("action");
         if (action == null) {
-            setOuterMealsAsAttribute(request);
+            List<MealTo> outMeals = MealsUtil.filteredByStreams(service.getAll(), LocalTime.MIN, LocalTime.MAX,
+                                                                MAX_DAILY_CALORIES);
+            request.setAttribute("meals", outMeals);
             request.setAttribute("localDateTimeFormat", dateFormat);
             log.debug("Forward to {}", forward);
             request.getRequestDispatcher(forward).forward(request, response);
         } else {
             switch (action) {
-                case "delete":
-                    forward = "meals";
-                    service.delete(getMealIdParameter(request));
-                    log.debug("Redirect to {}", forward);
-                    response.sendRedirect(forward);
-                    break;
                 case "edit":
                     request.setAttribute("meal", service.getById(getMealIdParameter(request)));
                 case "insert":
@@ -56,7 +52,10 @@ public class MealServlet extends HttpServlet {
                     log.debug("Forward to {}", forward);
                     request.getRequestDispatcher(forward).forward(request, response);
                     break;
+                case "delete":
+                    service.delete(getMealIdParameter(request));
                 default:
+                    forward = "meals";
                     log.debug("Redirect to {}", forward);
                     response.sendRedirect(forward);
                     break;
@@ -81,12 +80,7 @@ public class MealServlet extends HttpServlet {
         response.sendRedirect("meals");
     }
 
-    public int getMealIdParameter(HttpServletRequest request) {
+    private int getMealIdParameter(HttpServletRequest request) {
         return Integer.parseInt(request.getParameter("mealId"));
-    }
-
-    public void setOuterMealsAsAttribute(HttpServletRequest request) {
-        List<MealTo> outMeals = MealsUtil.filteredByStreams(service.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
-        request.setAttribute("meals", outMeals);
     }
 }
