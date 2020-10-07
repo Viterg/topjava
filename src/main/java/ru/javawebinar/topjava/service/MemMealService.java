@@ -50,8 +50,7 @@ public class MemMealService implements MealService {
     public Meal update(Meal meal) {
         int id = meal.getId();
         log.debug("Update meal with id {}", id);
-        meals.replace(id, meal);
-        return meal;
+        return meals.replace(id, meal) == null ? null : meal;
     }
 
     @Override
