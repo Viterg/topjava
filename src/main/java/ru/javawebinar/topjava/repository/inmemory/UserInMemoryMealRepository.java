@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,9 +34,10 @@ public class UserInMemoryMealRepository {
         return repository.get(id);
     }
 
-    public Collection<Meal> getAll() {
+    public List<Meal> getAll() {
         log.info("getAll");
         return repository.values().stream()
+                         .sorted(Comparator.comparing(Meal::getTime).reversed())
                          .sorted(Comparator.comparing(Meal::getDate).reversed())
                          .collect(Collectors.toList());
     }

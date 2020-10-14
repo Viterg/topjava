@@ -23,20 +23,20 @@
     <h2>Meals</h2>
     <a href="meals?action=create">Add Meal</a>
     <br>
-    <form id="filter" method="POST" action="meals">
+    <form id="filter" method="GET" action="meals">
         <input type="hidden" name="filter" value="true">
 
         <label for="startDate">От даты (включая)</label>
-        <input type="date" name="startDate" id="startDate" autocomplete="off">
+        <input type="date" name="startDate" id="startDate" autocomplete="off" value=${param.startDate}/>
 
         <label for="endDate">До даты (включая)</label>
-        <input type="date" name="endDate" id="endDate" autocomplete="off">
+        <input type="date" name="endDate" id="endDate" autocomplete="off" value=${param.endDate}/>
 
         <label for="startTime">От времени (включая)</label>
-        <input type="time" name="startTime" id="startTime" autocomplete="off">
+        <input type="time" name="startTime" id="startTime" autocomplete="off" value=${param.startTime}/>
 
         <label for="endTime">До времени (исключая)</label>
-        <input type="time" name="endTime" id="endTime" autocomplete="off">
+        <input type="time" name="endTime" id="endTime" autocomplete="off" value=${param.endTime}/>
 
         <br>
         <button type="submit">Отфильтровать</button>

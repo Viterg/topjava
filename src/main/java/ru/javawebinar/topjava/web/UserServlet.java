@@ -21,12 +21,9 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if ("authUser".equals(request.getParameter("action"))) {
-            log.debug("forward to user auth");
-            String userId = request.getParameter("userId");
-            SecurityUtil.setAuthUserId(Integer.parseInt(userId));
-            request.setAttribute("userId", userId);
-            request.getRequestDispatcher("/users.jsp").forward(request, response);
-        }
+        log.debug("forward to user auth");
+        String userId = request.getParameter("userId");
+        SecurityUtil.setAuthUserId(Integer.parseInt(userId));
+        response.sendRedirect("meals");
     }
 }

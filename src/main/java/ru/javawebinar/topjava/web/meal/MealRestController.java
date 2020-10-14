@@ -10,7 +10,10 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.*;
 
@@ -24,15 +27,15 @@ public class MealRestController {
         this.service = service;
     }
 
-    public Collection<Meal> getAll() {
+    public List<MealTo> getAll() {
         log.info("getAll");
-        return service.getAllForUser(authUserId());
-        // return MealsUtil.getTos(service.getAllForUser(authUserId()), authUserCaloriesPerDay());
+        return MealsUtil.getTos(service.getAllForUser(authUserId()), authUserCaloriesPerDay());
     }
 
-    public void save(Meal meal) {
-        if (meal.isNew()) create(meal);
-        else update(meal, meal.getId());
+    public List<MealTo> getAllFilteredByDates(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        log.info("getAll");
+        Collection<Meal> filtredByDates = service.getAllForUserFilteredByDates(authUserId(), startDate, endDate);
+        return MealsUtil.getFilteredTos(filtredByDates, authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal create(Meal meal) {
@@ -56,5 +59,4 @@ public class MealRestController {
         log.info("delete {}", id);
         service.delete(authUserId(), id);
     }
-
 }

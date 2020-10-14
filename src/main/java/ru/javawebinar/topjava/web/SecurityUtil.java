@@ -1,18 +1,16 @@
 package ru.javawebinar.topjava.web;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 public class SecurityUtil {
-    public static AtomicInteger userId = new AtomicInteger(1);
+    public static Integer userId = new Integer(1);
 
     public static int authUserId() {
-        return userId.get();
+        return userId.intValue();
     }
 
     public static void setAuthUserId(int userId) {
-        SecurityUtil.userId.set(userId);
+        SecurityUtil.userId = userId;
     }
 
     public static int authUserCaloriesPerDay() {
