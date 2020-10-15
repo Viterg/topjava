@@ -10,6 +10,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,20 +20,16 @@ public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, UserInMemoryMealRepository> commonRepository = new ConcurrentHashMap<>();
 
     public InMemoryMealRepository() {
-        UserInMemoryMealRepository repo1 = new UserInMemoryMealRepository();
-        MealsUtil.meals.forEach(repo1::save);
-        commonRepository.put(1, repo1);
-        UserInMemoryMealRepository repo2 = new UserInMemoryMealRepository();
-        Stream.of(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-                  new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000)).forEach(repo2::save);
-        commonRepository.put(2, repo2);
+        MealsUtil.meals.forEach(userId -> save(1, userId));
+        Stream.of(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак второго", 500),
+                  new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак второго", 1000))
+              .forEach(meal -> save(2, meal));
     }
 
     @Override
     public Meal save(int userId, Meal meal) {
         log.info("save for user {}", userId);
-        commonRepository.putIfAbsent(userId, new UserInMemoryMealRepository());
-        return commonRepository.get(userId).save(meal);
+        return commonRepository.computeIfAbsent(userId, id -> new UserInMemoryMealRepository()).save(meal);
     }
 
     @Override
@@ -53,15 +50,22 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAllForUser(int userId) {
         log.info("getAll for user {}", userId);
         UserInMemoryMealRepository mealRepository = commonRepository.get(userId);
-        return mealRepository == null ? Collections.emptyList() : mealRepository.getAll();
+        return mealRepository == null ? Collections.emptyList() : filterMealsByPredicate(mealRepository.getAll(),
+                                                                                         meal -> true);
     }
 
     @Override
     public List<Meal> getAllForUserFilteredByDates(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("getAllSorted for user {}", userId);
         UserInMemoryMealRepository mealRepository = commonRepository.get(userId);
-        return mealRepository == null ? Collections.emptyList() : mealRepository.getAll().stream()
-                    .filter(meal -> meal.getDate().compareTo(startDate) >= 0 && meal.getDate().compareTo(endDate) <= 0)
+        return mealRepository == null ? Collections.emptyList() : filterMealsByPredicate(mealRepository.getAll(),
+                         meal -> meal.getDate().compareTo(startDate) >= 0 && meal.getDate().compareTo(endDate) <= 0);
+    }
+
+    private List<Meal> filterMealsByPredicate(Collection<Meal> meals, Predicate<Meal> filter) {
+        return meals.stream()
+                    .filter(filter)
+                    .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                     .collect(Collectors.toList());
     }
 }

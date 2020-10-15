@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 public class UserInMemoryMealRepository {
     private static final Logger             log        = LoggerFactory.getLogger(UserInMemoryMealRepository.class);
+    private static final AtomicInteger      counter    = new AtomicInteger(0);
     private final        Map<Integer, Meal> repository = new ConcurrentHashMap<>();
-    private final        AtomicInteger      counter    = new AtomicInteger(0);
 
     public Meal save(Meal meal) {
         log.info("save {}", meal);
@@ -36,9 +36,6 @@ public class UserInMemoryMealRepository {
 
     public List<Meal> getAll() {
         log.info("getAll");
-        return repository.values().stream()
-                         .sorted(Comparator.comparing(Meal::getTime).reversed())
-                         .sorted(Comparator.comparing(Meal::getDate).reversed())
-                         .collect(Collectors.toList());
+        return new ArrayList<>(repository.values());
     }
 }

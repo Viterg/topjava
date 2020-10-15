@@ -27,16 +27,16 @@
         <input type="hidden" name="filter" value="true">
 
         <label for="startDate">От даты (включая)</label>
-        <input type="date" name="startDate" id="startDate" autocomplete="off" value=${param.startDate}/>
+        <input type="date" name="startDate" id="startDate" autocomplete="off" value=${startDate}/>
 
         <label for="endDate">До даты (включая)</label>
-        <input type="date" name="endDate" id="endDate" autocomplete="off" value=${param.endDate}/>
+        <input type="date" name="endDate" id="endDate" autocomplete="off" value=${endDate}/>
 
         <label for="startTime">От времени (включая)</label>
-        <input type="time" name="startTime" id="startTime" autocomplete="off" value=${param.startTime}/>
+        <input type="time" name="startTime" id="startTime" autocomplete="off" value=${startTime}/>
 
         <label for="endTime">До времени (исключая)</label>
-        <input type="time" name="endTime" id="endTime" autocomplete="off" value=${param.endTime}/>
+        <input type="time" name="endTime" id="endTime" autocomplete="off" value=${endTime}/>
 
         <br>
         <button type="submit">Отфильтровать</button>
