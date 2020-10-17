@@ -34,7 +34,7 @@ public class MealServlet extends HttpServlet {
             throws ServletException, IOException {
         List<MealTo> meals = null;
         String action = request.getParameter("action");
-        switch (action == null ? Boolean.parseBoolean(request.getParameter("filter")) ? "filter" : "all" : action) {
+        switch (action == null ? "all" : action) {
             case "delete":
                 controller.delete(getId(request));
                 response.sendRedirect("meals");
