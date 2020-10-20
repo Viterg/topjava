@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
-import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 @ContextConfiguration({
       "classpath:spring/spring-app.xml",
@@ -32,8 +31,6 @@ public class MealServiceTest {
     static {
         SLF4JBridgeHandler.install();
     }
-
-    private static final int NON_EXIST_MEAL_ID = 10;
 
     @Autowired
     private MealService service;
@@ -57,7 +54,7 @@ public class MealServiceTest {
     @Test
     public void update() {
         service.update(getUpdated(), ADMIN_ID);
-        assertMatch(service.get(START_SEQ + 9, ADMIN_ID), getUpdated());
+        assertMatch(service.get(admins100009.getId(), ADMIN_ID), getUpdated());
     }
 
     @Test
@@ -86,23 +83,23 @@ public class MealServiceTest {
 
     @Test
     public void delete() {
-        service.delete(START_SEQ + 3, USER_ID);
-        assertThrows(NotFoundException.class, () -> service.get(START_SEQ + 3, USER_ID));
+        service.delete(users100003.getId(), USER_ID);
+        assertThrows(NotFoundException.class, () -> service.get(users100003.getId(), USER_ID));
     }
 
     @Test
     public void deletedNotFound() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.delete(START_SEQ + 10, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(admins100010.getId(), USER_ID));
     }
 
     @Test
     public void getNotFound() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.get(START_SEQ + 10, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(admins100010.getId(), USER_ID));
     }
 
     @Test
     public void get() {
-        assertMatch(service.get(START_SEQ + 2, USER_ID), users100002);
+        assertMatch(service.get(users100002.getId(), USER_ID), users100002);
     }
 
     @Test

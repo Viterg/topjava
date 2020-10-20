@@ -29,6 +29,8 @@ public class MealTestData {
     public static final Meal admins100010 = new Meal(START_SEQ + 10, LocalDateTime.of(2015, Month.JUNE, 1, 21, 0),
                                                      "Админ ужин", 1500);
 
+    public static final int NON_EXIST_MEAL_ID = 10;
+
     public static Meal getNew() {
         return new Meal(null, LocalDateTime.of(2020, 6, 28, 18, 0), "Новый ужин", 1555);
     }
