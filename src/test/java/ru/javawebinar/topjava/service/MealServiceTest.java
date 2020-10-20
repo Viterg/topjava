@@ -16,7 +16,6 @@ import java.time.*;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -24,6 +23,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 @ContextConfiguration({
       "classpath:spring/spring-app.xml",
+      "classpath:spring/spring-repo-jdbc.xml",
       "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -32,6 +32,8 @@ public class MealServiceTest {
     static {
         SLF4JBridgeHandler.install();
     }
+
+    private static final int NON_EXIST_MEAL_ID = 10;
 
     @Autowired
     private MealService service;
@@ -42,20 +44,20 @@ public class MealServiceTest {
         Meal newMeal = getNew();
         Integer newId = created.getId();
         newMeal.setId(newId);
-        assertThat(created).usingRecursiveComparison().isEqualTo(newMeal);
-        assertThat(service.get(newId, USER_ID)).usingRecursiveComparison().isEqualTo(newMeal);
+        assertMatch(created, newMeal);
+        assertMatch(service.get(newId, USER_ID), newMeal);
     }
 
     @Test
     public void duplicateDatetime() throws Exception {
-        assertThrows(DataAccessException.class, () -> service
-                .create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин лёгкий", 200), USER_ID));
+        assertThrows(DataAccessException.class,
+                     () -> service.create(new Meal(users100004.getDateTime(), "Ужин лёгкий", 200), USER_ID));
     }
 
     @Test
     public void update() {
         service.update(getUpdated(), ADMIN_ID);
-        assertThat(service.get(START_SEQ + 9, ADMIN_ID)).usingRecursiveComparison().isEqualTo(getUpdated());
+        assertMatch(service.get(START_SEQ + 9, ADMIN_ID), getUpdated());
     }
 
     @Test
@@ -67,19 +69,19 @@ public class MealServiceTest {
     public void updateNonExist() {
         assertThrows(NotFoundException.class, () -> {
             Meal newMeal = getNew();
-            newMeal.setId(10);
+            newMeal.setId(NON_EXIST_MEAL_ID);
             service.update(newMeal, USER_ID);
         });
     }
 
     @Test
     public void deletedNonExist() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.delete(10, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(NON_EXIST_MEAL_ID, USER_ID));
     }
 
     @Test
     public void getNonExist() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.get(10, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(NON_EXIST_MEAL_ID, USER_ID));
     }
 
     @Test
@@ -100,15 +102,13 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        assertThat(service.get(START_SEQ + 2, USER_ID)).usingRecursiveComparison().isEqualTo(userMeals.get(0));
+        assertMatch(service.get(START_SEQ + 2, USER_ID), users100002);
     }
 
     @Test
     public void getAll() {
-        assertThat(service.getAll(USER_ID).toArray(new Meal[0])).usingRecursiveFieldByFieldElementComparator()
-                                                                .isEqualTo(new Meal[]{dinner311, lunch311, breakfast311,
-                                                                                      midnight, dinner301, lunch301,
-                                                                                      breakfast301});
+        assertMatch(service.getAll(USER_ID), users100008, users100007, users100006, users100005, users100004,
+                    users100003, users100002);
     }
 
     @Test
@@ -116,14 +116,13 @@ public class MealServiceTest {
         LocalDate startDate = LocalDate.of(2020, Month.JANUARY, 31);
         LocalDate endDate = LocalDate.of(2020, Month.JANUARY, 31);
         List<Meal> betweenInclusive = service.getBetweenInclusive(startDate, endDate, USER_ID);
-        assertThat(betweenInclusive.toArray(new Meal[0])).usingRecursiveFieldByFieldElementComparator().isEqualTo(
-                new Meal[]{dinner311, lunch311, breakfast311, midnight});
+        assertMatch(betweenInclusive, users100008, users100007, users100006, users100005);
     }
 
     @Test
     public void getBetweenInclusiveByNull() {
         List<Meal> betweenInclusive = service.getBetweenInclusive(null, null, USER_ID);
-        assertThat(betweenInclusive.toArray(new Meal[0])).usingRecursiveFieldByFieldElementComparator().isEqualTo(
-                new Meal[]{dinner311, lunch311, breakfast311, midnight, dinner301, lunch301, breakfast301});
+        assertMatch(betweenInclusive, users100008, users100007, users100006, users100005, users100004, users100003,
+                    users100002);
     }
 }

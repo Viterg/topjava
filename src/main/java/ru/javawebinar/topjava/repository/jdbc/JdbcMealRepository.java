@@ -10,11 +10,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.Util;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Repository
 public class JdbcMealRepository implements MealRepository {
@@ -70,7 +68,7 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         List<Meal> meals = jdbcTemplate.query(
-                "SELECT * FROM meals WHERE user_id=? AND datetime BETWEEN ? AND ? ORDER BY datetime DESC",
+                "SELECT * FROM meals WHERE user_id=? AND datetime >= ? AND datetime < ? ORDER BY datetime DESC",
                 ROW_MAPPER, userId, startDateTime, endDateTime);
         return meals;
     }
