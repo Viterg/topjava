@@ -1,7 +1,10 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,11 +16,15 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
+import static org.slf4j.LoggerFactory.getLogger;
+import static ru.javawebinar.topjava.MealTestData.NOT_FOUND;
+import static ru.javawebinar.topjava.MealTestData.getNew;
+import static ru.javawebinar.topjava.MealTestData.getUpdated;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -27,8 +34,24 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
+    private static final Logger        log = getLogger(MealServiceTest.class);
+    private static       StringBuilder watchedLog;
+
+    @Rule
+    public final Stopwatch stopwatch = new LogStopwatch();
+
     @Autowired
     private MealService service;
+
+    @BeforeClass
+    public static void initLog() {
+        watchedLog = new StringBuilder();
+    }
+
+    @AfterClass
+    public static void printLog() {
+        log.debug("Watch results {}", watchedLog);
+    }
 
     @Test
     public void delete() throws Exception {
@@ -101,11 +124,42 @@ public class MealServiceTest {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(
                 LocalDate.of(2020, Month.JANUARY, 30),
                 LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
-                meal3, meal2, meal1);
+                                 meal3, meal2, meal1);
     }
 
     @Test
     public void getBetweenWithNullDates() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
     }
+
+    private static void logInfo(Description description, String status, long nanos) {
+        String logs = String.format("Test %s %s, spent %d microseconds", description.getMethodName(), status,
+                                    TimeUnit.NANOSECONDS.toMicros(nanos));
+        watchedLog.append(logs);
+        log.debug(logs);
+    }
+
+    private static class LogStopwatch extends Stopwatch {
+
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            logInfo(description, "succeeded", nanos);
+        }
+
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, "failed", nanos);
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, "skipped", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
+        }
+    }
+
 }

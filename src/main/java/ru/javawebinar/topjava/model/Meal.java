@@ -1,18 +1,49 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@NamedQueries({
+    @NamedQuery(name = Meal.DELETE,
+              query = "DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:user_id"),
+    @NamedQuery(name = Meal.BY_ID,
+              query = "SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.id=:id AND m.user.id=:user_id"),
+    @NamedQuery(name = Meal.ALL_SORTED,
+              query = "SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.user.id=:user_id ORDER BY m.dateTime DESC"),
+    @NamedQuery(name = Meal.BETWEEN_HALF_OPEN,
+              query = "SELECT m FROM Meal m WHERE m.user.id=:user_id AND" +
+                      " m.dateTime >=:startDateTime AND m.dateTime < :endDateTime" +
+                      " ORDER BY m.dateTime DESC")
+})
+@Entity
+@Table(name = "meals", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")})
 public class Meal extends AbstractBaseEntity {
+
+    public static final String DELETE            = "Meal.delete";
+    public static final String BY_ID             = "Meal.get";
+    public static final String ALL_SORTED        = "Meal.getAllSorted";
+    public static final String BETWEEN_HALF_OPEN = "Meal.getBetweenHalfOpen";
+
+    @Column(name = "date_time", nullable = false)
+    @NotNull
     private LocalDateTime dateTime;
 
+    @Column(name = "description", nullable = false)
+    @Size(max = 255)
+    @NotBlank
     private String description;
 
+    @Column(name = "calories", nullable = false)
+    @Range(min = 10, max = 10000)
     private int calories;
 
+    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -72,11 +103,7 @@ public class Meal extends AbstractBaseEntity {
 
     @Override
     public String toString() {
-        return "Meal{" +
-                "id=" + id +
-                ", dateTime=" + dateTime +
-                ", description='" + description + '\'' +
-                ", calories=" + calories +
-                '}';
+        return "Meal{" + "id=" + id + ", dateTime=" + dateTime + ", description='" + description + '\'' +
+               ", calories=" + calories + '}';
     }
 }
