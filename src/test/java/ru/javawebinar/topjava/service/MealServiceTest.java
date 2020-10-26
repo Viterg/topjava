@@ -38,7 +38,28 @@ public class MealServiceTest {
     private static       StringBuilder watchedLog;
 
     @Rule
-    public final Stopwatch stopwatch = new LogStopwatch();
+    public final Stopwatch stopwatch = new Stopwatch() {
+
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            logInfo(description, "succeeded", nanos);
+        }
+
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, "failed", nanos);
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, "skipped", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
+        }
+    };
 
     @Autowired
     private MealService service;
@@ -50,7 +71,7 @@ public class MealServiceTest {
 
     @AfterClass
     public static void printLog() {
-        log.debug("Watch results {}", watchedLog);
+        log.debug("\n------------\nSUMMARY:\n------------\n{}", watchedLog);
     }
 
     @Test
@@ -133,33 +154,9 @@ public class MealServiceTest {
     }
 
     private static void logInfo(Description description, String status, long nanos) {
-        String logs = String.format("Test %s %s, spent %d microseconds", description.getMethodName(), status,
-                                    TimeUnit.NANOSECONDS.toMicros(nanos));
-        watchedLog.append(logs);
-        log.debug(logs);
+        String testName = description.getMethodName();
+        long testTime = TimeUnit.NANOSECONDS.toMillis(nanos);
+        watchedLog.append(String.format("%25s %6d ms%n", testName, testTime));
+        log.debug(String.format("Test %s spent %d milliseconds", testName, testTime));
     }
-
-    private static class LogStopwatch extends Stopwatch {
-
-        @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, "succeeded", nanos);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, "failed", nanos);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            logInfo(description, "skipped", nanos);
-        }
-
-        @Override
-        protected void finished(long nanos, Description description) {
-            logInfo(description, "finished", nanos);
-        }
-    }
-
 }
