@@ -34,26 +34,12 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static final Logger        log = getLogger(MealServiceTest.class);
+    private static final Logger        log           = getLogger(MealServiceTest.class);
+    private static final String        LOG_DELIMETER = "--------------------------------------\n";
     private static       StringBuilder watchedLog;
 
     @Rule
     public final Stopwatch stopwatch = new Stopwatch() {
-
-        @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, "succeeded", nanos);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, "failed", nanos);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            logInfo(description, "skipped", nanos);
-        }
 
         @Override
         protected void finished(long nanos, Description description) {
@@ -71,7 +57,7 @@ public class MealServiceTest {
 
     @AfterClass
     public static void printLog() {
-        log.debug("\n------------\nSUMMARY:\n------------\n{}", watchedLog);
+        log.debug("\n{}SUMMARY:\n{}{}", LOG_DELIMETER, LOG_DELIMETER, watchedLog);
     }
 
     @Test
@@ -157,6 +143,6 @@ public class MealServiceTest {
         String testName = description.getMethodName();
         long testTime = TimeUnit.NANOSECONDS.toMillis(nanos);
         watchedLog.append(String.format("%25s %6d ms%n", testName, testTime));
-        log.debug(String.format("Test %s spent %d milliseconds", testName, testTime));
+        log.debug("Test {} spent {} milliseconds", testName, testTime);
     }
 }
