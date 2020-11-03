@@ -2,15 +2,15 @@ package ru.javawebinar.topjava;
 
 public class Profiles {
     public static final String
-            JDBC = "jdbc",
-            JPA = "jpa",
+            JDBC    = "jdbc",
+            JPA     = "jpa",
             DATAJPA = "datajpa";
 
     public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
 
     public static final String
             POSTGRES_DB = "postgres",
-            HSQL_DB = "hsqldb";
+            HSQL_DB     = "hsqldb";
 
     //  Get DB profile depending of DB driver in classpath
     public static String getActiveDbProfile() {
@@ -20,10 +20,14 @@ public class Profiles {
         } catch (ClassNotFoundException ex) {
             try {
                 Class.forName("org.hsqldb.jdbcDriver");
-                return Profiles.HSQL_DB;
+                return HSQL_DB;
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("Could not find DB driver");
             }
         }
+    }
+
+    public static String getActiveDbConnectionProfile() {
+        return REPOSITORY_IMPLEMENTATION;
     }
 }
