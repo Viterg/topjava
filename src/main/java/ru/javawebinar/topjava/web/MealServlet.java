@@ -3,31 +3,32 @@ package ru.javawebinar.topjava.web;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
-import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
+import static ru.javawebinar.topjava.util.DateTimeUtil.*;
 
 public class MealServlet extends HttpServlet {
 
     private ConfigurableApplicationContext springContext;
-    private MealRestController mealController;
+    private MealRestController             mealController;
 
     @Override
     public void init() {
-        springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
+        springContext = new ClassPathXmlApplicationContext();
+        springContext.getEnvironment().setActiveProfiles(Profiles.REPOSITORY_IMPLEMENTATION,
+                                                         Profiles.getActiveDbProfile());
+        ((ClassPathXmlApplicationContext) springContext).setConfigLocations("spring/spring-app.xml",
+                                                                            "spring/spring-db.xml");
+        springContext.refresh();
         mealController = springContext.getBean(MealRestController.class);
     }
 
@@ -38,14 +39,14 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
-        if (StringUtils.isEmpty(request.getParameter("id"))) {
+        if (!StringUtils.hasText(request.getParameter("id"))) {
             mealController.create(meal);
         } else {
             mealController.update(meal, getId(request));
@@ -54,7 +55,8 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
 
         switch (action == null ? "all" : action) {
@@ -64,9 +66,9 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
             }
             case "create", "update" -> {
-                final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        mealController.get(getId(request));
+                Meal meal = "create".equals(action) ?
+                            new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                            mealController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
             }
