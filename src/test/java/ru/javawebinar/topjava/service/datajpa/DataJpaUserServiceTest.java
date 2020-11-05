@@ -26,7 +26,9 @@ public class DataJpaUserServiceTest extends AbstractUserServiceTest {
         User newUser = getNew();
         newUser.setId(newId);
         USER_MATCHER.assertMatch(created, newUser);
-        USER_MATCHER.assertMatch(service.getWithMeals(newId), newUser);
-        assertTrue(created.getMeals().isEmpty());
+
+        User withMeals = service.getWithMeals(newId);
+        USER_MATCHER.assertMatch(withMeals, newUser);
+        assertTrue(withMeals.getMeals().isEmpty());
     }
 }
