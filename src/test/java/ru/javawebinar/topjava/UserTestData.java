@@ -3,8 +3,7 @@ package ru.javawebinar.topjava;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
@@ -29,7 +28,7 @@ public class UserTestData {
         updated.setCaloriesPerDay(330);
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setRoles(Collections.singletonList(Role.ADMIN));
+        updated.setRoles(List.of(Role.ADMIN, Role.USER));
         return updated;
     }
 }

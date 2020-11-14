@@ -1,12 +1,12 @@
-package ru.javawebinar.topjava.web;
+package ru.javawebinar.topjava.web.meal;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.web.meal.AbstractMealController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.*;
 public class JspMealController extends AbstractMealController {
     public JspMealController(MealService service) {
         super(service);
+        log = LoggerFactory.getLogger(JspMealController.class);
     }
 
     @GetMapping
@@ -29,27 +30,27 @@ public class JspMealController extends AbstractMealController {
         return "meals";
     }
 
-    @GetMapping(params = "action=create")
+    @GetMapping("/create")
     public String create(Model model) {
         Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         model.addAttribute("meal", meal);
         return "mealForm";
     }
 
-    @GetMapping(params = "action=delete")
+    @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
         delete(getId(request));
-        return "redirect:meals";
+        return "redirect:/meals";
     }
 
-    @GetMapping(params = "action=update")
+    @GetMapping("/update")
     public String update(HttpServletRequest request) {
         Meal meal = get(getId(request));
         request.setAttribute("meal", meal);
         return "mealForm";
     }
 
-    @GetMapping(params = "action=filter")
+    @GetMapping("/filter")
     public String filter(HttpServletRequest request) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
@@ -60,8 +61,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @PostMapping
-    public String doPost(HttpServletRequest request) throws IOException {
-        request.setCharacterEncoding("UTF-8");
+    public String doPost(HttpServletRequest request) {
         Meal meal = new Meal(LocalDateTime.parse(request.getParameter("dateTime")),
                              request.getParameter("description"),
                              Integer.parseInt(request.getParameter("calories")));
@@ -70,7 +70,7 @@ public class JspMealController extends AbstractMealController {
         } else {
             update(meal, getId(request));
         }
-        return "redirect:meals";
+        return "redirect:/meals";
     }
 
     private int getId(HttpServletRequest request) {

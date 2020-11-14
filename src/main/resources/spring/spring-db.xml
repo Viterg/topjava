@@ -66,8 +66,9 @@
         <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
             <constructor-arg ref="jdbcTemplate"/>
         </bean>
+        <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
-        <tx:annotation-driven proxy-target-class="true"/>
+        <tx:annotation-driven/>
         <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
             <property name="dataSource" ref="dataSource"/>
         </bean>
@@ -113,6 +114,7 @@
               p:entityManagerFactory-ref="entityManagerFactory"/>
 
         <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
+        <context:property-override location="classpath:cache/cacheOverride.cfg"/>
     </beans>
 
     <beans profile="jpa">

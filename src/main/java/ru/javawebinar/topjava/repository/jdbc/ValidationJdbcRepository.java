@@ -6,10 +6,10 @@ import javax.validation.*;
 import java.util.Set;
 
 interface ValidationJdbcRepository {
-    Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     default void validateEntity(AbstractBaseEntity entity) {
-        Set<ConstraintViolation<AbstractBaseEntity>> violations = VALIDATOR.validate(entity);
+        Set<ConstraintViolation<AbstractBaseEntity>> violations = validator.validate(entity);
         if (!violations.isEmpty()) throw new ConstraintViolationException(violations);
     }
 }

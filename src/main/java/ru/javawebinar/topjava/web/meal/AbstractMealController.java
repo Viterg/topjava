@@ -17,9 +17,8 @@ import java.util.List;
 import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
 public abstract class AbstractMealController {
-    private static final Logger log = LoggerFactory.getLogger(AbstractMealController.class);
-
-    protected final MealService service;
+    protected static Logger      log;
+    protected final  MealService service;
 
     public AbstractMealController(MealService service) {
         this.service = service;

@@ -42,7 +42,7 @@ public class JdbcUserRepository implements UserRepository, ValidationJdbcReposit
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            updateRoles("INSERT INTO user_roles (role, user_id) VALUES (?, ?)", user);
+            updateRoles(user);
         } else {
             int updated = namedParameterJdbcTemplate.update("""
                                UPDATE users SET name=:name, email=:email, password=:password, 
@@ -50,14 +50,15 @@ public class JdbcUserRepository implements UserRepository, ValidationJdbcReposit
                             """, parameterSource);
             if (updated == 0) return null;
 
-            updateRoles("UPDATE user_roles SET role=? WHERE user_id = ?", user);
+            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
+            updateRoles(user);
         }
         return user;
     }
 
-    public void updateRoles(String query, User user) {
+    private void updateRoles(User user) {
         Set<Role> roles = user.getRoles();
-        jdbcTemplate.batchUpdate(query, roles, roles.size(),
+        jdbcTemplate.batchUpdate("INSERT INTO user_roles (role, user_id) VALUES (?, ?)", roles, roles.size(),
                                  (ps, role) -> {
                                      ps.setString(1, role.name());
                                      ps.setInt(2, user.getId());
