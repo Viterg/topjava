@@ -29,7 +29,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     protected UserService service;
 
     @Autowired
-    public Environment environment;
+    private Environment environment;
 
     @Autowired
     private CacheManager cacheManager;
