@@ -1,0 +1,100 @@
+GET http://localhost:8080/topjava/meals
+Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+});
+%}
+
+###
+GET http://localhost:8080/topjava/meals/100002
+Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+});
+%}
+
+###
+GET http://localhost:8080/topjava/meals/between?startDateTime=2020-01-30T09:00:00&endDateTime=2020-01-30T11:00:00
+Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+});
+%}
+
+###
+GET http://localhost:8080/topjava/meals/filter?startDate=2020-01-30&startTime=09:00:00&endDate=2020-01-30&endTime=11:00:00
+Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+});
+%}
+
+###
+PUT http://localhost:8080/topjava/meals/100002
+Content-Type: application/json
+
+{
+  "dateTime": "2020-01-30'T'10:02:00",
+  "description": "Обновленный завтрак",
+  "calories": 200
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 204, "Response status is not 204");
+});
+%}
+
+###
+DELETE http://localhost:8080/topjava/meals/100002
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 204, "Response status is not 204");
+});
+%}
+
+
+###
+POST http://localhost:8080/topjava/meals
+Content-Type: application/json
+
+{
+  "dateTime": "2020-02-01'T'18:00:00",
+  "description": "Созданный ужин",
+  "calories": 300
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 201, "Response status is not 201");
+});
+%}
