@@ -1,23 +1,21 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.datetime.DateFormat;
-import ru.javawebinar.topjava.util.datetime.TimeFormat;
 
 import java.net.URI;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = MealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
 
-    static final String REST_URL = "/meals";
+    static final String REST_URL = "/rest/meals";
 
     @Override
     @GetMapping
@@ -54,19 +52,9 @@ public class MealRestController extends AbstractMealController {
         super.update(meal, id);
     }
 
-    @GetMapping("/between")
-    public List<MealTo> getBetween(
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam LocalDateTime startDateTime,
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam LocalDateTime endDateTime) {
-        return getBetween(startDateTime.toLocalDate(), startDateTime.toLocalTime(), endDateTime.toLocalDate(),
-                          endDateTime.toLocalTime());
-    }
-
     @GetMapping("/filter")
-    public List<MealTo> getFiltered(@DateFormat @RequestParam LocalDate startDate,
-                                    @DateFormat @RequestParam LocalDate endDate,
-                                    @TimeFormat @RequestParam LocalTime startTime,
-                                    @TimeFormat @RequestParam LocalTime endTime) {
+    public List<MealTo> getFiltered(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate,
+                                    @RequestParam LocalTime startTime, @RequestParam LocalTime endTime) {
         return getBetween(startDate, startTime, endDate, endTime);
     }
 }

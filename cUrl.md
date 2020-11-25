@@ -3,8 +3,6 @@
 curl -X GET -H 'Accept: application/json' -i http://localhost:8080/topjava/meals
 ### Get meal by id
 curl -X GET -H 'Accept: application/json' -i http://localhost:8080/topjava/meals/100002
-### Get between (datetime) meals
-curl -X GET -H 'Accept: application/json' -i http://localhost:8080/topjava/meals/between?startDateTime=2020-01-30T09:00:00&endDateTime=2020-01-30T11:00:00
 ### Get filtered meals
 curl -X GET -H 'Accept: application/json' -i http://localhost:8080/topjava/meals/filter?startDate=2020-01-30&startTime=09:00:00&endDate=2020-01-30&endTime=11:00:00
 ### Update meal by id

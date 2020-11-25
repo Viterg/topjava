@@ -1,7 +1,6 @@
-package ru.javawebinar.topjava.util.datetime;
+package ru.javawebinar.topjava.util;
 
 import org.springframework.format.Formatter;
-import ru.javawebinar.topjava.util.DateTimeUtil;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
