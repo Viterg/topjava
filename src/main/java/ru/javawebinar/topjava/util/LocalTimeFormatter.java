@@ -7,10 +7,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class LocalTimeFormatter implements Formatter<LocalTime> {
-    private final String pattern;
+    private final DateTimeFormatter formatter;
 
     public LocalTimeFormatter(String pattern) {
-        this.pattern = pattern;
+        formatter = DateTimeFormatter.ofPattern(pattern);
     }
 
     @Override
@@ -20,6 +20,6 @@ public class LocalTimeFormatter implements Formatter<LocalTime> {
 
     @Override
     public String print(LocalTime object, Locale locale) {
-        return object == null ? "" : DateTimeFormatter.ofPattern(pattern, locale).format(object);
+        return object == null ? "" : formatter.format(object);
     }
 }

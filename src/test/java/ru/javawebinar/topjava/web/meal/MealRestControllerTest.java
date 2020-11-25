@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
+import static ru.javawebinar.topjava.UserTestData.user;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.util.MealsUtil.*;
 
@@ -33,7 +34,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, user.getCaloriesPerDay())));
     }
 
     @Test
@@ -81,10 +82,20 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void getFiltered() throws Exception {
         perform(MockMvcRequestBuilders.get(
-                REST_URL + "filter?startDate=2020-01-30&startTime=09:00:00&endDate=2020-01-30&endTime=11:00:00"))
+                REST_URL + "filter?startDate=2020-01-31&startTime=00:00:00&endDate=2020-01-31&endTime=14:00:00"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(List.of(meal1), DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(List.of(meal6, meal5, meal4), user.getCaloriesPerDay())));
+    }
+
+    @Test
+    void getEmptyFiltered() throws Exception {
+        perform(MockMvcRequestBuilders.get(
+                REST_URL + "filter?startDate=&startTime"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, user.getCaloriesPerDay())));
     }
 }
