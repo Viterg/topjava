@@ -1,6 +1,5 @@
 var ctx;
 
-// $(document).ready(function () {
 $(function () {
     // https://stackoverflow.com/a/5064235/548473
     ctx = {
@@ -43,3 +42,19 @@ $(function () {
     };
     makeEditable();
 });
+
+function enable() {
+    var chkbox = $(this);
+    var enabled = chkbox.is(":checked");
+//  https://stackoverflow.com/a/22213543/548473
+    $.ajax({
+        url: ctx.ajaxUrl + chkbox.closest("tr").attr("id"),
+        type: "POST",
+        data: "enabled=" + enabled
+    }).done(function () {
+        chkbox.closest("tr").attr("data-userEnabled", enabled);
+        successNoty(enabled ? "common.enabled" : "common.disabled");
+    }).fail(function () {
+        $(chkbox).prop("checked", !enabled);
+    });
+}

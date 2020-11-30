@@ -4,7 +4,7 @@ function makeEditable() {
     form = $('#detailsForm');
     $(".delete").click(function () {
         if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
+            deleteRow($(this).closest("tr").attr("id"));
         }
     });
 
@@ -31,10 +31,8 @@ function deleteRow(id) {
     });
 }
 
-function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
+function updateTableByData(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
@@ -49,6 +47,12 @@ function save() {
     });
 }
 
+function updateTable() {
+    $.get(ctx.ajaxUrl, function (data) {
+        ctx.datatableApi.clear().rows.add(data).draw();
+    });
+}
+
 var failedNote;
 
 function closeNoty() {
@@ -58,6 +62,15 @@ function closeNoty() {
     }
 }
 
+function failNoty(jqXHR) {
+    closeNoty();
+    failedNote = new Noty({
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;Error status: " + jqXHR.status,
+        type: "error",
+        layout: "bottomRight"
+    }).show();
+}
+
 function successNoty(text) {
     closeNoty();
     new Noty({
@@ -65,14 +78,5 @@ function successNoty(text) {
         type: 'success',
         layout: "bottomRight",
         timeout: 1000
-    }).show();
-}
-
-function failNoty(jqXHR) {
-    closeNoty();
-    failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;Error status: " + jqXHR.status,
-        type: "error",
-        layout: "bottomRight"
     }).show();
 }
