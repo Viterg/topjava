@@ -28,74 +28,17 @@ $(function () {
             "order": [
                 [
                     0,
-                    "asc"
+                    "desc"
                 ]
-            ],
-            // "createdRow": function (row, data, dataIndex) {
-            //     $(row).attr("data-mealExcess", data.excess);
-            // },
+            ]
         }, updateFilteredTable)
     };
     makeEditable();
 });
 
-$(function () {
-    $.datetimepicker.setLocale('en');
-
-//  http://xdsoft.net/jqplugins/datetimepicker/
-    $('#dateTime').datetimepicker({
-        format: 'Y-m-d H:i'
-    });
-
-    var startDate = $('#startDate');
-    var endDate = $('#endDate');
-    startDate.datetimepicker({
-        timepicker: false,
-        format: 'Y-m-d',
-        formatDate: 'Y-m-d',
-        onShow: function () {
-            this.setOptions({
-                maxDate: endDate.val() ? endDate.val() : false
-            })
-        }
-    });
-    endDate.datetimepicker({
-        timepicker: false,
-        format: 'Y-m-d',
-        formatDate: 'Y-m-d',
-        onShow: function () {
-            this.setOptions({
-                minDate: startDate.val() ? startDate.val() : false
-            })
-        }
-    });
-
-    var startTime = $('#startTime');
-    var endTime = $('#endTime');
-    startTime.datetimepicker({
-        datepicker: false,
-        format: 'H:i',
-        onShow: function () {
-            this.setOptions({
-                maxTime: endTime.val() ? endTime.val() : false
-            })
-        }
-    });
-    endTime.datetimepicker({
-        datepicker: false,
-        format: 'H:i',
-        onShow: function () {
-            this.setOptions({
-                minTime: startTime.val() ? startTime.val() : false
-            })
-        }
-    });
-
-});
-
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get(ctx.ajaxUrl, updateTableByData);
+    updateTable();
 }
 
 function updateFilteredTable() {

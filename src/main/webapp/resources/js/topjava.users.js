@@ -43,10 +43,9 @@ $(function () {
     makeEditable();
 });
 
-function enable() {
-    var chkbox = $(this);
+function enable(check_element) {
+    var chkbox = $(check_element);
     var enabled = chkbox.is(":checked");
-//  https://stackoverflow.com/a/22213543/548473
     $.ajax({
         url: ctx.ajaxUrl + chkbox.closest("tr").attr("id"),
         type: "POST",

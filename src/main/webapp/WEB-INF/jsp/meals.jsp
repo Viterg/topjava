@@ -24,22 +24,18 @@
                             <div class="offset-1 col-2">
                                 <label for="startDate"><spring:message code="meal.startDate"/>:</label>
                                 <input class="form-control" name="startDate" id="startDate" autocomplete="off">
-                                <%--                        <input type="date" name="startDate" id="startDate" value="${param.startDate}">--%>
                             </div>
                             <div class="col-2">
                                 <label for="endDate"><spring:message code="meal.endDate"/>:</label>
                                 <input class="form-control" name="endDate" id="endDate" autocomplete="off">
-                                <%--                        <input type="date" name="endDate" id="endDate" value="${param.endDate}">--%>
                             </div>
                             <div class="offset-2 col-2">
                                 <label for="startTime"><spring:message code="meal.startTime"/>:</label>
                                 <input class="form-control" name="startTime" id="startTime" autocomplete="off">
-                                <%--                        <input type="time" name="startTime" id="startTime" value="${param.startTime}">--%>
                             </div>
                             <div class="col-2">
                                 <label for="endTime"><spring:message code="meal.endTime"/>:</label>
                                 <input class="form-control" name="endTime" id="endTime" autocomplete="off">
-                                <%--                        <input type="time" name="endTime" id="endTime" value="${param.endTime}">--%>
                             </div>
                         </div>
                     </form>
@@ -68,14 +64,9 @@
                 </tr>
                 </thead>
                 <c:forEach items="${meals}" var="meal">
-                    <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealTo"/>
+                    <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
                     <tr id="${meal.id}" data-mealExcess="${meal.excess}">
-                        <td>
-                                <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                                <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                                <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                                ${fn:formatDateTime(meal.dateTime)}
-                        </td>
+                        <td>${fn:formatDateTime(meal.dateTime)}</td>
                         <td>${meal.description}</td>
                         <td>${meal.calories}</td>
                         <td><a href="meals/update?id=${meal.id}"><spring:message code="common.update"/></a></td>
@@ -103,8 +94,7 @@
                                placeholder="<spring:message code="meal.dateTime"/>">
                     </div>
                     <div class="form-group">
-                        <label for="description" class="col-form-label"><spring:message
-                                code="meal.description"/></label>
+                        <label for="description" class="col-form-label"><spring:message code="meal.description"/></label>
                         <input type="text" class="form-control" id="description" name="description"
                                placeholder="<spring:message code="meal.description"/>">
                     </div>

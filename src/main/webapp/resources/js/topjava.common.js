@@ -31,6 +31,12 @@ function deleteRow(id) {
     });
 }
 
+function updateTable() {
+    $.get(ctx.ajaxUrl, function (data) {
+        ctx.datatableApi.clear().rows.add(data).draw();
+    });
+}
+
 function updateTableByData(data) {
     ctx.datatableApi.clear().rows.add(data).draw();
 }
@@ -44,12 +50,6 @@ function save() {
         $("#editRow").modal("hide");
         updateTable();
         successNoty("Saved");
-    });
-}
-
-function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
     });
 }
 
