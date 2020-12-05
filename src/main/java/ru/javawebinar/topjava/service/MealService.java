@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.DateTimeUtil.atStartOfDayOrMin;
-import static ru.javawebinar.topjava.util.DateTimeUtil.atStartOfNextDayOrMax;
+import static ru.javawebinar.topjava.util.DateTimeUtil.*;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -41,6 +42,13 @@ public class MealService {
     public void update(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
         checkNotFoundWithId(repository.save(meal, userId), meal.id());
+    }
+
+    public void update(MealTo mealTo, int userId) {
+        Assert.notNull(mealTo, "mealTo must not be null");
+        Meal meal = get(mealTo.id(), userId);
+        Meal updatedMeal = MealsUtil.updateFromTo(meal, mealTo);
+        checkNotFoundWithId(repository.save(updatedMeal, userId), meal.id());
     }
 
     public Meal create(Meal meal, int userId) {
