@@ -3,9 +3,7 @@ package ru.javawebinar.topjava.util;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -37,5 +35,9 @@ public class DateTimeUtil {
 
     public static @Nullable LocalTime parseLocalTime(@Nullable String str) {
         return StringUtils.hasText(str) ? LocalTime.parse(str) : null;
+    }
+
+    public static @Nullable LocalDateTime parseLocalDateTime(@Nullable String str) {
+        return StringUtils.hasText(str) ? LocalDateTime.parse(str, DATE_TIME_FORMATTER) : null;
     }
 }
