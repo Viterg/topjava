@@ -42,6 +42,7 @@ public abstract class AbstractMealController {
 
     public Meal create(MealTo mealTo) {
         log.info("create from to {}", mealTo);
+        checkNew(mealTo);
         return create(MealsUtil.createNewFromTo(mealTo));
     }
 
