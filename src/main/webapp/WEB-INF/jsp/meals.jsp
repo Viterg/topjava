@@ -80,11 +80,12 @@
                     <input type="hidden" id="id" name="id">
                     <div class="form-group">
                         <label for="dateTime" class="col-form-label"><spring:message code="meal.dateTime"/></label>
-                        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime"
+                        <input class="form-control" id="dateTime" name="dateTime"
                                placeholder="<spring:message code="meal.dateTime"/>">
                     </div>
                     <div class="form-group">
-                        <label for="description" class="col-form-label"><spring:message code="meal.description"/></label>
+                        <label for="description" class="col-form-label"><spring:message
+                                code="meal.description"/></label>
                         <input type="text" class="form-control" id="description" name="description"
                                placeholder="<spring:message code="meal.description"/>">
                     </div>
@@ -109,9 +110,8 @@
 </div>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
-<script type="text/javascript">
-    const i18n = [];
-    i18n["addTitle"] = '<spring:message code="meal.add"/>';
-    i18n["editTitle"] = '<spring:message code="meal.edit"/>';
-</script>
+<jsp:include page="fragments/i18ns.jsp">
+    <jsp:param name="addTitle" value="meal.add"/>
+    <jsp:param name="editTitle" value="meal.edit"/>
+</jsp:include>
 </html>
