@@ -5,20 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.UserTestData;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Collections;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.TestUtil.readFromJson;
-import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.javawebinar.topjava.TestUtil.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 class AdminRestControllerTest extends AbstractControllerTest {
@@ -88,7 +88,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void update() throws Exception {
-        User updated = UserTestData.getUpdated();
+        User updated = getUpdated();
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
@@ -100,11 +100,11 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        User newUser = UserTestData.getNew();
+        User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(UserTestData.jsonWithPassword(newUser, "newPass")))
+                .content(jsonWithPassword(newUser, "newPass")))
                 .andExpect(status().isCreated());
 
         User created = readFromJson(action, User.class);
@@ -112,6 +112,29 @@ class AdminRestControllerTest extends AbstractControllerTest {
         newUser.setId(newId);
         USER_MATCHER.assertMatch(created, newUser);
         USER_MATCHER.assertMatch(userService.get(newId), newUser);
+    }
+
+    @Test
+    void updateInvalid() throws Exception {
+        User updated = new User(user);
+        updated.setName("1");
+        updated.setCaloriesPerDay(5);
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .with(userHttpBasic(admin))
+                                      .content(JsonUtil.writeValue(updated)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void createWithLocationInvalid() throws Exception {
+        User newUser = new User(null, "1", "user@yandex.ru", "newPass", 5, false, new Date(), Collections
+                .singleton(Role.USER));
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .with(userHttpBasic(admin))
+                                      .content(jsonWithPassword(newUser, "newPass")))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

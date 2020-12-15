@@ -12,17 +12,19 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+
+import static java.time.LocalDateTime.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.javawebinar.topjava.MealTestData.getNew;
+import static ru.javawebinar.topjava.MealTestData.getUpdated;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.TestUtil.readFromJson;
-import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
-import static ru.javawebinar.topjava.UserTestData.user;
-import static ru.javawebinar.topjava.util.MealsUtil.createTo;
-import static ru.javawebinar.topjava.util.MealsUtil.getTos;
+import static ru.javawebinar.topjava.TestUtil.*;
+import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.util.MealsUtil.*;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -94,6 +96,26 @@ class MealRestControllerTest extends AbstractControllerTest {
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
+    }
+
+    @Test
+    void updateInvalid() throws Exception {
+        Meal updated = new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "9", 3);
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(updated))
+                                      .with(userHttpBasic(user)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void createWithLocationInvalid() throws Exception {
+        Meal newMeal = new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "9", 2);
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(newMeal))
+                                      .with(userHttpBasic(user)))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

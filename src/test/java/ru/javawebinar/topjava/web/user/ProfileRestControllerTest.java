@@ -78,6 +78,27 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void registerInvalid() throws Exception {
+        UserTo newTo = new UserTo(null, "1", "newemail@ya.ru", "newPassword", 1500);
+        perform(MockMvcRequestBuilders.post(REST_URL + "/register")
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(newTo)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void updateInvalid() throws Exception {
+        UserTo updatedTo = new UserTo(null, "1", "user@yandex.ru", "newPassword", 1500);
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .with(userHttpBasic(user))
+                                      .content(JsonUtil.writeValue(updatedTo)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     void getWithMeals() throws Exception {
         assumeDataJpa();
         perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals")

@@ -10,8 +10,7 @@ import ru.javawebinar.topjava.util.UserUtil;
 
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
 public abstract class AbstractUserController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
