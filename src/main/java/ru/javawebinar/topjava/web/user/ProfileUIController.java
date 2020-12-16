@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.web.user;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
@@ -17,7 +16,6 @@ public class ProfileUIController extends AbstractUserController {
 
     @GetMapping
     public String profile(Model model) {
-        model.addAttribute("userTo", SecurityUtil.safeGet().getUserTo());
         return "profile";
     }
 
@@ -29,29 +27,17 @@ public class ProfileUIController extends AbstractUserController {
     }
 
     @PostMapping("/register")
-    public String saveRegister(@Valid @ModelAttribute("userTo") UserTo userTo, BindingResult result,
-                               SessionStatus status, ModelMap model) {
-        if (result.hasErrors()) {
-            model.addAttribute("register", true);
-            return "profile";
-        } else {
-            create(userTo);
-            status.setComplete();
-            return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
-        }
+    public String saveRegister(@Valid @ModelAttribute("userTo") UserTo userTo, SessionStatus status, ModelMap model) {
+        create(userTo);
+        status.setComplete();
+        return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
     }
 
     @PostMapping
-    public String updateProfile(@Valid @ModelAttribute("userTo") UserTo userTo, BindingResult result,
-                                SessionStatus status, ModelMap model) {
-        if (result.hasErrors()) {
-            model.addAttribute("profile", true);
-            return "profile";
-        } else {
-            update(userTo, SecurityUtil.authUserId());
-            SecurityUtil.get().update(userTo);
-            status.setComplete();
-            return "redirect:/meals";
-        }
+    public String updateProfile(@Valid @ModelAttribute("userTo") UserTo userTo, SessionStatus status, ModelMap model) {
+        update(userTo, SecurityUtil.authUserId());
+        SecurityUtil.get().update(userTo);
+        status.setComplete();
+        return "redirect:/meals";
     }
 }

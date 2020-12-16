@@ -40,8 +40,8 @@
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle nav-link my-1 ml-2" data-toggle="dropdown">ru</a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="/login?lang=ru">Русский</a>
-                        <a class="dropdown-item" href="/login?lang=en">English</a>
+                        <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?lang=ru">Русский</a>
+                        <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?lang=en">English</a>
                     </div>
                 </li>
             </ul>

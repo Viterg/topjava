@@ -37,6 +37,11 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
+        String cause = ValidationUtil.getRootCause(e).toString();
+        if (cause.contains("users_unique_email_idx")) {
+            // "Пользователь с такой почтой уже есть в приложении";
+            return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, "User with this email already exists");
+        }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);
     }
 
@@ -62,13 +67,6 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        String cause = rootCause.toString();
-        String detail;
-        if (cause.contains("users_unique_email_idx")) {
-            detail = "User with this email already exists"; // "Пользователь с такой почтой уже есть в приложении";
-        } else {
-            detail = cause;
-        }
-        return new ErrorInfo(req.getRequestURL(), errorType, detail);
+        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
     }
 }

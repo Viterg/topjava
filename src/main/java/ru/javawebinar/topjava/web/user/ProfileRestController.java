@@ -1,8 +1,7 @@
 package ru.javawebinar.topjava.web.user;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
@@ -20,28 +19,28 @@ public class ProfileRestController extends AbstractUserController {
 
     @GetMapping
     public User get() {
-        return super.get(authUserId());
+        return get(authUserId());
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete() {
-        super.delete(authUserId());
+        delete(authUserId());
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo) {
-        User created = super.create(userTo);
+    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo, BindingResult result) {
+        User created = create(userTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL).build().toUri();
+                                                          .path(REST_URL).build().toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody UserTo userTo) {
-        super.update(userTo, authUserId());
+    public void update(@Valid @RequestBody UserTo userTo, BindingResult result) {
+        update(userTo, authUserId());
     }
 
     @GetMapping("/text")
@@ -51,6 +50,6 @@ public class ProfileRestController extends AbstractUserController {
 
     @GetMapping("/with-meals")
     public User getWithMeals() {
-        return super.getWithMeals(authUserId());
+        return getWithMeals(authUserId());
     }
 }

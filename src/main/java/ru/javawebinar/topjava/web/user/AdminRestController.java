@@ -1,8 +1,7 @@
 package ru.javawebinar.topjava.web.user;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
@@ -30,11 +29,11 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
-        User created = super.create(user);
+    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user, BindingResult result) {
+        User created = create(user);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
+                                                          .path(REST_URL + "/{id}")
+                                                          .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
@@ -45,11 +44,10 @@ public class AdminRestController extends AbstractUserController {
         super.delete(id);
     }
 
-    @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody User user, @PathVariable int id) {
-        super.update(user, id);
+    public void update(@Valid @RequestBody User user, @PathVariable int id, BindingResult result) {
+        update(user, id);
     }
 
     @Override
