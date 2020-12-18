@@ -4,5 +4,4 @@ Java Enterprise Online Project
 
 ![topjava_structure](https://user-images.githubusercontent.com/13649199/27433714-8294e6fe-575e-11e7-9c41-7f6e16c5ebe5.jpg)
 
-### <a href="description.md">Описание и план проекта</a>
 ### <a href="http://tj21-viterg.herokuapp.com/" target=_blank>Развёрнутое приложение</a>
